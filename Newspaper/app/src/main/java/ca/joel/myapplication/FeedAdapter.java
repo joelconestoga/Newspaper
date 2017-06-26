@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +36,8 @@ class FeedAdapter extends ArrayAdapter<Post> {
 
         new ImageDownloader(img).execute(post.thumbnail);
 
-        title.setText(post.title);
-        desc.setText(post.description);
+        title.setText(Html.fromHtml(post.title));
+        desc.setText(Html.fromHtml(post.description));
         img.setImageURI(Uri.parse(post.thumbnail));
 
         return convertView;
