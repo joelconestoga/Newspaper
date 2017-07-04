@@ -2,6 +2,7 @@ package ca.joel.myapplication;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ListView;
 
 import org.json.JSONArray;
@@ -28,10 +29,13 @@ public class FeedActivity extends AppCompatActivity implements OnFeedListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
-        adapter =  new FeedAdapter(getApplicationContext(), R.layout.layout_feed_item);
-
         ListView listView = (ListView) findViewById(R.id.listView);
+
+        adapter =  new FeedAdapter(getApplicationContext(), R.layout.layout_feed_item);
         listView.setAdapter(adapter);
+
+        View header = getLayoutInflater().inflate(R.layout.layout_banner, listView, false);
+        listView.addHeaderView(header, null, false);
 
         FeedTask task = new FeedTask(this);
         task.execute(URL);

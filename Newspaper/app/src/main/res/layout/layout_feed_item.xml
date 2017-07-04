@@ -31,7 +31,7 @@
         android:layout_toEndOf="@+id/thumbnail"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:textColor="@color/colorPrimaryDark" />
+        android:textColor="@color/colorFont" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,6 +43,6 @@
         android:layout_below="@+id/title"
         android:layout_alignLeft="@+id/title"
         android:layout_alignStart="@+id/title"
-        android:textColor="@color/colorPrimary" />
+        android:textColor="@color/colorFont" />
 
 </RelativeLayout>
