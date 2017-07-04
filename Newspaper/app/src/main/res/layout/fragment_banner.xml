@@ -1,0 +1,29 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ca.joel.myapplication.FragmentBanner">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imvBanner"
+            android:layout_width="match_parent"
+            android:layout_height="190dp" />
+
+        <TextView
+            android:id="@+id/txvBanner"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_below="@+id/imvBanner"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:text="Head News Title"
+            android:textColor="@color/colorFont"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+</FrameLayout>

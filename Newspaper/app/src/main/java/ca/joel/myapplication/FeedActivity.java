@@ -2,8 +2,12 @@ package ca.joel.myapplication;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,19 +27,14 @@ public class FeedActivity extends AppCompatActivity implements OnFeedListener {
     private static final String URL = "http://spokeonline.com/wp-json/wp/v2/posts?_embed";
 
     FeedAdapter adapter;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
 
-        ListView listView = (ListView) findViewById(R.id.listView);
-
-        adapter =  new FeedAdapter(getApplicationContext(), R.layout.layout_feed_item);
-        listView.setAdapter(adapter);
-
-        View header = getLayoutInflater().inflate(R.layout.layout_banner, listView, false);
-        listView.addHeaderView(header, null, false);
+        setupListView();
 
         FeedTask task = new FeedTask(this);
         task.execute(URL);
@@ -43,7 +42,21 @@ public class FeedActivity extends AppCompatActivity implements OnFeedListener {
 
     @Override
     public void onFeedNotified(JSONArray feeds) {
+
         List<Post> posts = createPostsFor(feeds);
+
+        Post headNews = posts.get(1);
+        posts.remove(1);
+
+        ImageView imvBanner = (ImageView) findViewById(R.id.imvBanner);
+        new ImageDownloader(imvBanner).execute(headNews.thumbnail);
+
+        TextView txvBanner = (TextView) findViewById(R.id.txvBanner);
+        txvBanner.setText(Html.fromHtml(headNews.title));
+
+        TextView txvBannerDetail = (TextView) findViewById(R.id.txvBannerDetail);
+        txvBannerDetail.setText(Html.fromHtml(headNews.description));
+
         adapter.addAll(posts);
         adapter.notifyDataSetChanged();
     }
@@ -74,4 +87,25 @@ public class FeedActivity extends AppCompatActivity implements OnFeedListener {
         return posts;
     }
 
+    private void setupListView() {
+        listView = (ListView) findViewById(R.id.listView);
+
+        adapter =  new FeedAdapter(getApplicationContext(), R.layout.layout_feed_item);
+        listView.setAdapter(adapter);
+
+        View header = getLayoutInflater().inflate(R.layout.layout_banner, listView, false);
+        listView.addHeaderView(header, null, false);
+
+        /* trying to use fragment on the list view header
+        LayoutInflater inflater = getLayoutInflater();
+        header = inflater.inflate(R.layout.myLayout, null);
+        listOfEvents.addHeaderView(header);
+
+        android.app.FragmentManager fragManager = getFragmentManager();
+        android.app.FragmentTransaction fragTrans = fragManager.beginTransaction();
+        FragmentBanner banner = new FragmentBanner();
+        fragTrans.add(R.id.lytBanner, banner);
+        fragTrans.commit();
+        */
+    }
 }

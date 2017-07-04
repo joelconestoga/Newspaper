@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <ImageView
+        android:id="@+id/imvBanner"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:layout_height="200dp" />
 
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/txvBanner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imvBanner"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
+        android:text="Head News Title"
+        android:textColor="@color/colorFont"
+        android:textSize="25sp" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/txvBannerDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txvBanner"
+        android:layout_marginLeft="25dp"
+        android:text="Head News Detail"
+        android:textColor="@color/colorFont"
+        android:textSize="15sp" />
+
+</RelativeLayout>
