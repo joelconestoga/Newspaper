@@ -95,17 +95,5 @@ public class FeedActivity extends AppCompatActivity implements OnFeedListener {
 
         View header = getLayoutInflater().inflate(R.layout.layout_banner, listView, false);
         listView.addHeaderView(header, null, false);
-
-        /* trying to use fragment on the list view header
-        LayoutInflater inflater = getLayoutInflater();
-        header = inflater.inflate(R.layout.myLayout, null);
-        listOfEvents.addHeaderView(header);
-
-        android.app.FragmentManager fragManager = getFragmentManager();
-        android.app.FragmentTransaction fragTrans = fragManager.beginTransaction();
-        FragmentBanner banner = new FragmentBanner();
-        fragTrans.add(R.id.lytBanner, banner);
-        fragTrans.commit();
-        */
     }
 }
