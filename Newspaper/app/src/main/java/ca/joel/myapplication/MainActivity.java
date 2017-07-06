@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,7 +62,9 @@ public class MainActivity extends AppCompatActivity
         posts.remove(1);
 
         ImageView imvBanner = (ImageView) findViewById(R.id.imvBanner);
-        new ImageDownloader(imvBanner).execute(headNews.thumbnail);
+        //new ImageDownloader(imvBanner).execute(headNews.thumbnail);
+        //new ImageDownloaderGlide(this, imvBanner).execute(headNews.thumbnail);
+        Glide.with(this).load(headNews.thumbnail).into(imvBanner);
 
         TextView txvBanner = (TextView) findViewById(R.id.txvBanner);
         txvBanner.setText(Html.fromHtml(headNews.title));

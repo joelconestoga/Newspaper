@@ -13,6 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 class FeedAdapter extends ArrayAdapter<Post> {
 
     FeedAdapter(@NonNull Context context, @LayoutRes int resource) {
@@ -34,7 +36,10 @@ class FeedAdapter extends ArrayAdapter<Post> {
         TextView desc = (TextView) convertView.findViewById(R.id.description);
         ImageView img = (ImageView) convertView.findViewById(R.id.thumbnail);
 
-        new ImageDownloader(img).execute(post.thumbnail);
+        //new ImageDownloader(img).execute(post.thumbnail);
+        //new ImageDownloaderGlide(getContext(), img).execute(post.thumbnail);
+        Glide.with(getContext()).load(post.thumbnail).into(img);
+
 
         title.setText(Html.fromHtml(post.title));
         desc.setText(Html.fromHtml(post.description));
