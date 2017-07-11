@@ -1,6 +1,9 @@
 package ca.joel.myapplication;
 
-class Post {
+import com.orm.SugarRecord;
+
+class Post extends SugarRecord {
+
     String title;
     String description;
     String thumbnail;
