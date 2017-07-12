@@ -10,11 +10,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class FeedTask extends AsyncTask<String, Void, JSONArray> {
+class FeedDownloaderTask extends AsyncTask<String, Void, JSONArray> {
 
-    private OnFeedListener listener;
+    private FeedDownloaderListener listener;
 
-    FeedTask(OnFeedListener listener) {
+    FeedDownloaderTask(FeedDownloaderListener listener) {
         this.listener = listener;
     }
 
@@ -56,6 +56,6 @@ class FeedTask extends AsyncTask<String, Void, JSONArray> {
             return;
 
         if (listener != null)
-            listener.onFeedNotified(array);
+            listener.onFeedsNotified(array);
     }
 }

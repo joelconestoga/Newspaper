@@ -15,10 +15,18 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-class FeedAdapter extends ArrayAdapter<Post> {
+import java.util.List;
+
+class FeedAdapter extends ArrayAdapter<Post> implements FeedPersisterListener {
 
     FeedAdapter(@NonNull Context context, @LayoutRes int resource) {
         super(context, resource);
+    }
+
+    @Override
+    public void onFeedsPersisted(List<Post> posts) {
+        addAll(posts);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -36,9 +44,8 @@ class FeedAdapter extends ArrayAdapter<Post> {
         TextView desc = (TextView) convertView.findViewById(R.id.description);
         ImageView img = (ImageView) convertView.findViewById(R.id.thumbnail);
 
-        //new ImageDownloader(img).execute(post.thumbnail);
-        //new ImageDownloaderGlide(getContext(), img).execute(post.thumbnail);
-        Glide.with(getContext()).load(post.thumbnail).into(img);
+        new ImageDownloader(img).execute(post.thumbnail);
+        //Glide.with(getContext()).load(post.thumbnail).into(img);
 
 
         title.setText(Html.fromHtml(post.title));

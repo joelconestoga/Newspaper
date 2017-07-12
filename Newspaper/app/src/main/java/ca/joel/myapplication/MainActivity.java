@@ -1,9 +1,7 @@
 package ca.joel.myapplication;
 
+import android.media.Image;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.text.Html;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,17 +15,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.orm.SchemaGenerator;
+import com.orm.SugarContext;
+import com.orm.SugarDb;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnFeedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     /*
         SOME OLD URLS
@@ -37,8 +30,16 @@ public class MainActivity extends AppCompatActivity
      */
     private static final String URL = "http://spokeonline.com/wp-json/wp/v2/posts?_embed";
 
-    FeedAdapter adapter;
     ListView listView;
+    View header;
+    ImageView imvBanner;
+    TextView txvBanner;
+    TextView txvBannerDetail;
+
+    FeedAdapter lvAdapter;
+    BannerAdapter bannerAdapter;
+    FeedPersister persister;
+    FeedDownloaderTask taskDownloader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,73 +47,49 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupMenus();
-        setupListView();
+        SugarDb db = new SugarDb(this);
+        db.onCreate(db.getDB());
 
-        FeedTask task = new FeedTask(this);
-        task.execute(URL);
+        cleanDB();
+
+        setupDrawerMenu();
+
+        setupBusinessObjects();
     }
 
-    @Override
-    public void onFeedNotified(JSONArray feeds) {
-
-        List<Post> posts = createPostsFor(feeds);
-
-        Post headNews = posts.get(1);
-        posts.remove(1);
-
-        ImageView imvBanner = (ImageView) findViewById(R.id.imvBanner);
-        //new ImageDownloader(imvBanner).execute(headNews.thumbnail);
-        //new ImageDownloaderGlide(this, imvBanner).execute(headNews.thumbnail);
-        Glide.with(this).load(headNews.thumbnail).into(imvBanner);
-
-        TextView txvBanner = (TextView) findViewById(R.id.txvBanner);
-        txvBanner.setText(Html.fromHtml(headNews.title));
-
-        TextView txvBannerDetail = (TextView) findViewById(R.id.txvBannerDetail);
-        txvBannerDetail.setText(Html.fromHtml(headNews.description));
-
-        adapter.addAll(posts);
-        adapter.notifyDataSetChanged();
+    private void cleanDB() {
+        SugarContext.terminate();
+        SchemaGenerator schemaGenerator = new SchemaGenerator(getApplicationContext());
+        schemaGenerator.deleteTables(new SugarDb(getApplicationContext()).getDB());
+        SugarContext.init(getApplicationContext());
+        schemaGenerator.createDatabase(new SugarDb(getApplicationContext()).getDB());
     }
 
-    private List<Post> createPostsFor(JSONArray feeds) {
-        List<Post> posts = new ArrayList<>();
+    private void setupBusinessObjects() {
 
-        for (int i = 0; i < feeds.length(); i++) {
-            JSONObject object = feeds.optJSONObject(i);
+        persister = new FeedPersister();
+        taskDownloader = new FeedDownloaderTask(persister);
 
-            JSONObject title = null;
-            JSONObject excerpt = null;
-            JSONObject featuredmedia = null;
+        lvAdapter =  new FeedAdapter(getApplicationContext(), R.layout.layout_feed_item);
+        persister.addListener(lvAdapter);
 
-            try {
-                title = object.getJSONObject("title");
-                excerpt = object.getJSONObject("excerpt");
-                featuredmedia = object.getJSONObject("_embedded").
-                        getJSONArray("wp:featuredmedia").getJSONObject(0);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            posts.add(new Post(title.optString("rendered"),
-                    excerpt.optString("rendered"),
-                    featuredmedia.optString("source_url")));
-        }
-        return posts;
-    }
-
-    private void setupListView() {
         listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(lvAdapter);
 
-        adapter =  new FeedAdapter(getApplicationContext(), R.layout.layout_feed_item);
-        listView.setAdapter(adapter);
-
-        View header = getLayoutInflater().inflate(R.layout.layout_banner, listView, false);
+        header = getLayoutInflater().inflate(R.layout.layout_banner, listView, false);
         listView.addHeaderView(header, null, false);
+
+        imvBanner = (ImageView) findViewById(R.id.imvBanner);
+        txvBanner = (TextView) findViewById(R.id.txvBanner);
+        txvBannerDetail = (TextView) findViewById(R.id.txvBannerDetail);
+
+        bannerAdapter = new BannerAdapter(this, imvBanner, txvBanner, txvBannerDetail);
+        persister.addListener(bannerAdapter);
+
+        taskDownloader.execute(URL);
     }
 
-    private void setupMenus() {
+    private void setupDrawerMenu() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
