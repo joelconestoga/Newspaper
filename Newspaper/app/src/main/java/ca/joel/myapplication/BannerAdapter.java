@@ -28,8 +28,7 @@ public class BannerAdapter implements FeedPersisterListener {
 
         Post headNews = posts.get(1);
 
-        new ImageDownloader(image).execute(headNews.thumbnail);
-        //Glide.with(context).load(headNews.thumbnail).into(image);
+        Glide.with(context).load(headNews.thumbnail).into(image);
 
         title.setText(Html.fromHtml(headNews.title));
         detail.setText(Html.fromHtml(headNews.description));
