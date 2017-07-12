@@ -10,7 +10,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class FeedDownloaderTask extends AsyncTask<String, Void, JSONArray> {
+import static ca.joel.myapplication.MainActivity.SPOKE_WP_URL;
+
+class FeedDownloaderTask extends AsyncTask<String, Void, JSONArray>
+        implements FeedRefresherListener {
 
     private FeedDownloaderListener listener;
 
@@ -20,6 +23,7 @@ class FeedDownloaderTask extends AsyncTask<String, Void, JSONArray> {
 
     @Override
     protected JSONArray doInBackground(String... params) {
+
         String url = params[0];
 
         OkHttpClient client = new OkHttpClient();
@@ -57,5 +61,10 @@ class FeedDownloaderTask extends AsyncTask<String, Void, JSONArray> {
 
         if (listener != null)
             listener.onFeedsNotified(array);
+    }
+
+    @Override
+    public void onRefresh() {
+        execute(SPOKE_WP_URL);
     }
 }

@@ -1,7 +1,7 @@
 package ca.joel.myapplication;
 
-import android.media.Image;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,26 +20,22 @@ import com.orm.SugarContext;
 import com.orm.SugarDb;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AfterRefreshListener {
 
-    /*
-        SOME OLD URLS
-        "https://public-api.wordpress.com/rest/v1.1/sites/500anos.wordpress.com/posts/";
-        "https://www.kaehler.photo/wp-json/wp/v2/posts/";
-        "http://spokeonline.com/wp-json/wp/v2/posts/";
-     */
-    private static final String URL = "http://spokeonline.com/wp-json/wp/v2/posts?_embed";
+    public static final String SPOKE_WP_URL = "http://spokeonline.com/wp-json/wp/v2/posts?_embed";
 
     ListView listView;
     View header;
     ImageView imvBanner;
     TextView txvBanner;
     TextView txvBannerDetail;
+    public SwipeRefreshLayout swipeRefresh;
 
     FeedAdapter lvAdapter;
     BannerAdapter bannerAdapter;
     FeedPersister persister;
     FeedDownloaderTask taskDownloader;
+    FeedRefresher refresher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +66,15 @@ public class MainActivity extends AppCompatActivity
         persister = new FeedPersister();
         taskDownloader = new FeedDownloaderTask(persister);
 
-        lvAdapter =  new FeedAdapter(getApplicationContext(), R.layout.layout_feed_item);
+        refresher = new FeedRefresher();
+        refresher.setPersisterListener(persister);
+        refresher.setTaskListener(taskDownloader);
+        refresher.setAfterRefresh(this);
+
+        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+        swipeRefresh.setOnRefreshListener(refresher);
+
+        lvAdapter =  new FeedAdapter(this, R.layout.layout_feed_item);
         persister.addListener(lvAdapter);
 
         listView = (ListView) findViewById(R.id.listView);
@@ -86,7 +90,13 @@ public class MainActivity extends AppCompatActivity
         bannerAdapter = new BannerAdapter(this, imvBanner, txvBanner, txvBannerDetail);
         persister.addListener(bannerAdapter);
 
-        taskDownloader.execute(URL);
+        //taskDownloader.execute(SPOKE_WP_URL);
+    }
+
+    @Override
+    public void onRefreshFinished() {
+        if (swipeRefresh.isRefreshing())
+            swipeRefresh.setRefreshing(false);
     }
 
     private void setupDrawerMenu() {
@@ -115,19 +125,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }

@@ -23,22 +23,14 @@ class ImageDownloader extends AsyncTask<String, Integer, Drawable> {
 
     @Override
     protected Drawable doInBackground(String... arg0) {
-        // This is done in a background thread
         return downloadImage(arg0[0]);
     }
 
-    /**
-     * Called after the image has been downloaded
-     * -> this calls a function on the main thread again
-     */
     protected void onPostExecute(Drawable image) {
         if (image != null)
             this.image.setBackgroundDrawable(image);
     }
 
-    /**
-     * Actually download the Image from the _url
-     */
     private Drawable downloadImage(String _url) {
         //Prepare to download image
         URL url;

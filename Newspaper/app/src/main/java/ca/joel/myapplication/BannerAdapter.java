@@ -26,6 +26,9 @@ public class BannerAdapter implements FeedPersisterListener {
     @Override
     public void onFeedsPersisted(List<Post> posts) {
 
+        if (posts.size() == 0)
+            return;
+
         Post headNews = posts.get(1);
 
         Glide.with(context).load(headNews.thumbnail).into(image);

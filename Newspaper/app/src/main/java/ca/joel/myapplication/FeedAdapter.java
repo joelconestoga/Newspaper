@@ -57,6 +57,9 @@ class FeedAdapter extends ArrayAdapter<Post> implements FeedPersisterListener {
 
         Glide.with(this.context).load(post.thumbnail).into(holder.img);
 
+        if (((MainActivity)context).swipeRefresh.isRefreshing())
+            ((MainActivity)context).swipeRefresh.setRefreshing(false);
+
         return row;
     }
 

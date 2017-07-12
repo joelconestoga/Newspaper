@@ -1,5 +1,6 @@
 package ca.joel.myapplication;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -9,7 +10,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FeedPersister implements FeedDownloaderListener {
+public class FeedPersister implements FeedDownloaderListener,
+        FeedRefresherListener {
 
     List<FeedPersisterListener> listeners = new ArrayList<>();
 
@@ -21,10 +23,6 @@ public class FeedPersister implements FeedDownloaderListener {
 
     public void notifyPersistedPosts() {
         List<Post> posts = Post.listAll(Post.class);
-
-        for (Post b: posts) {
-            Log.d("myTag", b.toString());
-        }
         for (FeedPersisterListener listener: listeners) {
             listener.onFeedsPersisted(posts);
         }
@@ -62,5 +60,10 @@ public class FeedPersister implements FeedDownloaderListener {
             posts.add(newPost);
         }
         return posts;
+    }
+
+    @Override
+    public void onRefresh() {
+        notifyPersistedPosts();
     }
 }
